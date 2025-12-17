@@ -1,28 +1,92 @@
-# IDEA 的文件（不要上传）
+# ============ IntelliJ IDEA ============
 .idea/
 *.iml
+*.ipr
+*.iws
+.idea_modules/
 
-# Gradle 编译文件（不要上传）
+# 但可以保留以下重要配置（可选）
+# !.idea/codeStyles/
+# !.idea/inspectionProfiles/
+
+# ============ Gradle ============
 .gradle/
 build/
 out/
 bin/
+classes/
+generated/
 
-# Minecraft 运行文件（不要上传）
+# 构建产物
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Gradle 包装器
+!gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties.backup
+
+# Gradle 缓存
+.gradle/caches/
+.gradle/daemon/
+.gradle/native/
+.gradle/wrapper/dists/
+.gradle/loom-cache/
+
+# ============ Minecraft 开发 ============
 run/
 logs/
 crash-reports/
+debug/
+local/
 
-# 操作系统的临时文件（不要上传）
+# 客户端配置
+options.txt
+optionsof.txt
+usercache.json
+usernamecache.json
+
+# 世界和地图数据
+saves/
+world/
+worlds/
+DIM*/
+stats/
+
+# ============ 操作系统文件 ============
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
+*.lnk
 
-# 编译出来的 jar 文件（不要上传）
-*.jar
-*.zip
-
-# 临时文件（不要上传）
+# ============ 临时文件 ============
 *.log
-*.tmp
+*.log.*
+*.pid
+*.seed
+*.pid.lock
 *.bak
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.cache/
+*.cache
+
+# ============ 其他 ============
+*.dll
+*.so
+*.dylib
+.env
+local.properties
