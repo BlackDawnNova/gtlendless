@@ -1,0 +1,23 @@
+{
+  "type": "gtlendless:final_furnace",
+  "duration": 400,
+  "eu": 4,
+  "item_inputs": [
+    {
+      "item": "gtlendless:final_proton",
+      "count": 1
+    }
+  ],
+  "item_outputs": [
+    {
+      "item": "minecraft:netherite_scrap",
+      "count": 1,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:diamond",
+      "count": 2,
+      "chance": 0.8
+    }
+  ]
+}

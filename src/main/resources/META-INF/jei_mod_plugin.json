@@ -1,0 +1,4 @@
+{
+  "pluginUid": "gtlendless:jei_plugin",
+  "pluginClass": "github.forilusa.gtlendless.integration.jei.GTLendlessJeiPlugin"
+}

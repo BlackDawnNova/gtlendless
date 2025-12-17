@@ -1,0 +1,297 @@
+plugins {
+    id "dev.architectury.loom" version "1.6-SNAPSHOT"
+    id "maven-publish"
+    id "com.dorongold.task-tree" version "2.1.1"
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+
+String buildNumber = System.getenv("GITHUB_ACTION_NUMBER")
+version = "${mod_version}" + (buildNumber != null ? "-build_${System.getenv("GITHUB_RUN_NUMBER")}" : "")
+group = project.maven_group
+
+java {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+}
+
+loom {
+    silentMojangMappingsLicense()
+
+    // 确保 Mixin 配置正确
+    mixin {
+        defaultRefmapName = "gtlendless.refmap.json"
+        useLegacyMixinAp = false
+    }
+
+    forge {
+        // 重新添加 mixinConfigs 以确保配置被处理
+        mixinConfigs = ["gtlendless.mixins.json"]
+
+        dataGen {
+            mod(mod_id)
+        }
+    }
+
+    runs {
+        client {
+            property 'mixin.debug.export', 'true'
+            property 'mixin.debug.verbose', 'true'
+            property 'mixin.dumpTargetOnFailure', 'true'
+        }
+    }
+}
+
+repositories {
+
+    maven {
+        url 'https://maven.aliyun.com/repository/public'
+        allowInsecureProtocol = true
+    }
+    maven {
+        url 'https://maven.aliyun.com/repository/central'
+        allowInsecureProtocol = true
+    }
+    maven {
+        url 'https://maven.aliyun.com/repository/gradle-plugin'
+        allowInsecureProtocol = true
+    }
+
+    mavenLocal()
+    flatDir {
+        dir 'libs'
+    }
+    mavenCentral()
+
+    maven {
+        name = "Forge Maven"
+        url = "https://maven.minecraftforge.net/"
+    }
+
+    maven {
+        name = 'GTCEu Maven'
+        url = 'https://maven.gtceu.com'
+        content {
+            includeGroup 'com.gregtechceu.gtceu'
+        }
+    }
+
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name = "CurseMaven"
+        url = "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        name = "Jared's Maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        url "https://maven.saps.dev/releases/"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.ftb.mods"
+        }
+    }
+    maven {
+        url = "https://maven.tterrag.com/"
+        content {
+            includeGroup("com.jozufozu.flywheel")
+            includeGroup("com.tterrag.registrate")
+            includeGroup("com.simibubi.create")
+        }
+    }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
+    maven {
+        url "https://maven.architectury.dev/"
+    }
+    maven {
+        name 'IzzelAliz Maven'
+        url 'https://maven.izzel.io/releases/'
+    }
+    maven {
+        url "https://maven.teamresourceful.com/repository/maven-public/"
+    }
+    maven {
+        url = "https://repo.spongepowered.org/repository/maven-public/"
+    }
+   // maven {
+       // url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+   // }
+    maven {
+        url = "https://maven.createmod.net"
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:$project.minecraft_version"
+    forge "net.minecraftforge:forge:$project.minecraft_version-$project.forge_version"
+
+    mappings loom.layered() {
+        officialMojangMappings()
+         parchment("org.parchmentmc.data:parchment-$project.minecraft_version:$project.parchment_mappings@zip")
+     }
+
+    // === 添加这些 Mixin 依赖 ===
+    //annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    //implementation 'org.spongepowered:mixin:0.8.5'
+
+    // 确保 ASM 依赖
+    //implementation 'org.ow2.asm:asm:9.5'
+    //implementation 'org.ow2.asm:asm-commons:9.5'
+    //implementation 'org.ow2.asm:asm-tree:9.5'
+    //implementation 'org.ow2.asm:asm-util:9.5'
+
+
+    // Mixin Extras
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$project.mixinextras_version"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:$project.mixinextras_version"))
+
+    implementation files("libs/caffeine-3.1.8.jar")
+    modRuntimeOnly files("libs/caffeine-3.1.8.jar")
+
+    // 思索
+    modImplementation("net.createmod.ponder:Ponder-Common-${minecraft_version}:${ponder_version}")
+
+    // GTCEu
+    modImplementation files("libs/gtceu-1.20.1-1.4.4.jar")
+    modImplementation files("libs/ldlib-forge-1.20.1-1.0.29.jar")
+    modImplementation files("libs/Registrate-MC1.20-1.3.11.jar")
+
+    // Configuration
+    modCompileOnly files("libs/configuration-forge-1.20.1-3.1.0.jar")
+    modRuntimeOnly files("libs/configuration-forge-1.20.1-3.1.0.jar")
+
+    // GTL核心
+    // modCompileOnly files("libs/gtlcore-1.2.2.6-fix2.jar")
+    // modImplementation files("libs/gtladditions-2.4.5Custom.jar") // GTLADD禁用
+    modImplementation files("libs/kotlinforforge-4.11.0-all.jar")
+
+    // JEI
+    modCompileOnly files("libs/jei-1.20.1-forge-15.20.0.116.jar")
+    modRuntimeOnly files("libs/jei-1.20.1-forge-15.20.0.116.jar")
+
+    // Jade
+    modImplementation files("libs/jade-1.20.1-forge-11.9.2.jar")
+
+    // Applied Energistics 2
+    modImplementation files("libs/appliedenergistics2-forge-15.4.10.jar")
+    modImplementation files("libs/guideme-20.1.7.jar")
+
+    // Architectury
+    modImplementation files("libs/architectury-9.1.12-forge.jar")
+
+    // Team Resourceful
+    modImplementation files("libs/resourcefullib-forge-1.20.1-2.1.29.jar")
+    modImplementation files("libs/resourcefulconfig-forge-1.20.1-2.1.2.jar")
+    modImplementation files("libs/botarium-forge-1.20.1-2.3.3.jar")
+
+    // Ad Astra - 已禁用
+    // modImplementation files("libs/ad_astra-forge-1.20.1-1.15.18.jar")
+
+    // 其他模组
+    modImplementation files("libs/gtmthings-1.3.5.b.jar")
+    modImplementation files("libs/ftb-chunks-forge-2001.3.1.jar")
+    modImplementation files("libs/ftb-teams-forge-2001.3.0.jar")
+    modImplementation files("libs/ftb-library-forge-2001.2.4.jar")
+    modImplementation files("libs/glodium-1.20-1.5-forge.jar")
+    modImplementation files("libs/ExtendedAE-1.20-1.4.5-forge.jar")
+    modImplementation files("libs/merequester-forge-1.20.1-1.1.5.jar")
+    modImplementation files("libs/LibX-1.20.1-5.0.14.jar")
+    modImplementation files("libs/TravelAnchors-1.20.1-5.0.1.jar")
+    modImplementation files("libs/StargateJourney-1.20.1-0.6.42.jar")
+    modCompileOnly files("libs/ReAvaritia-1.20.1-1.3.8.3.jar")
+    modImplementation files("libs/kubejs-forge-2001.6.4-build.120.jar")
+    modImplementation files("libs/rhino-forge-2001.2.3-build.6.jar")
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // Team Resourceful
+    forgeRuntimeLibrary("com.teamresourceful:yabn:1.0.3")
+    forgeRuntimeLibrary("com.teamresourceful:bytecodecs:1.0.2")
+}
+
+processResources {
+    // set up properties for filling into metadata
+    var properties = [
+            "mod_license"      : mod_license,
+            "mod_id"           : mod_id,
+            "version"          : version, // 对应mods.toml的${version}
+            "mod_name"         : mod_name,
+            "mod_url"          : mod_url,
+            "mod_author"       : mod_authors, // 修正：匹配gradle.properties的mod_authors
+            "forge_version"    : forge_version, // 移除split，使用完整版本（47.3.7）
+            "minecraft_version": minecraft_version, // 完整MC版本（1.20.1）
+            "gtceu_version"    : gtceu_version, // 完整GTCEU版本（1.4.4）
+            "kubejs_version"   : kubejs_version,
+            "jei_version"      : jei_version,
+    ]
+    inputs.properties(properties)
+
+    filesMatching("META-INF/mods.toml") {
+        expand properties // 替换所有占位符
+    }
+
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release.set(17)
+
+    options.compilerArgs << "-Xlint:-deprecation"
+    options.compilerArgs << "-Xlint:-removal"
+}
+
+java {
+    withSourcesJar() //源代码
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : mod_id,
+                "Specification-Vendor"    : mod_author,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : mod_author,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        // 发布仓库配置
+    }
+}
+
+tasks.register('cleanLoomCache') {
+    doLast {
+        def loomCache = new File(project.projectDir, '.gradle/loom-cache')
+        if (loomCache.exists()) {
+            println "清理 Loom 缓存: ${loomCache.absolutePath}"
+            project.delete(loomCache)
+        }
+    }
+}
+
+clean.dependsOn('cleanLoomCache')

@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "gtlendless:block/steam_other",
+    "down": "gtlendless:block/steam_other",
+    "up": "gtlendless:block/steam_other",
+    "north": "gtlendless:block/steam_front1",
+    "east": "gtlendless:block/steam_other",
+    "south": "gtlendless:block/steam_other",
+    "west": "gtlendless:block/steam_other"
+  }
+}

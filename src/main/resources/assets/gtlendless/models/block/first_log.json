@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "gtlendless:block/first_log_top",
+    "side": "gtlendless:block/first_log"
+  }
+}

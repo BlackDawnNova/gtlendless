@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=north,upwards_facing=down": { "x": 180, "y": 180, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=north,upwards_facing=up": { "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=north,upwards_facing=north": { "x": 90, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=north,upwards_facing=south": { "x": 270, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=north,upwards_facing=west": { "x": 90, "y": 90, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=north,upwards_facing=east": { "x": 90, "y": 270, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=east,upwards_facing=down": { "x": 180, "y": 270, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=east,upwards_facing=up": { "y": 90, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=east,upwards_facing=north": { "x": 90, "y": 90, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=east,upwards_facing=south": { "x": 270, "y": 90, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=east,upwards_facing=west": { "x": 90, "y": 180, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=east,upwards_facing=east": { "x": 90, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=south,upwards_facing=down": { "x": 180, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=south,upwards_facing=up": { "y": 180, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=south,upwards_facing=north": { "x": 90, "y": 180, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=south,upwards_facing=south": { "x": 270, "y": 180, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=south,upwards_facing=west": { "x": 90, "y": 270, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=south,upwards_facing=east": { "x": 90, "y": 0, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=west,upwards_facing=down": { "x": 180, "y": 90, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=west,upwards_facing=up": { "y": 270, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=west,upwards_facing=north": { "x": 90, "y": 270, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=west,upwards_facing=south": { "x": 270, "y": 270, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=west,upwards_facing=west": { "x": 90, "y": 0, "model": "gtlendless:block/machine/steam_final_furnace" },
+    "facing=west,upwards_facing=east": { "x": 90, "y": 90, "model": "gtlendless:block/machine/steam_final_furnace" }
+  }
+}

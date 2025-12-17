@@ -1,0 +1,7 @@
+{
+  "parent": "gtceu:block/machines/parallel_hatch_mk7",
+  "textures": {
+    "overlay": "gtlendless:block/machines/parallel_hatch_mk7/overlay_front",
+    "emissive": "gtlendless:block/machines/parallel_hatch_mk7/overlay_front_emissive"
+  }
+}

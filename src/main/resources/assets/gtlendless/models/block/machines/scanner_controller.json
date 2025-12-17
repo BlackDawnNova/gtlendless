@@ -1,0 +1,7 @@
+{
+  "parent": "gtceu:block/casings/voltage/lv",
+  "textures": {
+    "overlay": "gtlendless:block/machines/scanner_controller/overlay_front",
+    "emissive": "gtlendless:block/machines/scanner_controller/overlay_front_emissive"
+  }
+}

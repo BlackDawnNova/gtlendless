@@ -1,0 +1,50 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "MIT"
+
+[[mods]]
+modId = "gtlendless"
+version = "${version}"
+displayName = "GTL Endless"
+description = "This is a derivative mod created for the GTL modpack."
+authors = "ForiLusa"
+
+[mixins]
+configs = [
+    "gtlendless.mixins.json"
+]
+
+[[dependencies.gtlendless]]
+modId = "forge"
+mandatory = true
+versionRange = "[${forge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.gtlendless]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.gtlendless]]
+modId = "configuration"
+mandatory = true
+versionRange = "[3.1.0,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.gtlendless]]
+modId = "gtceu"
+mandatory = true
+versionRange = "[${gtceu_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.gtlendless]]
+modId = "gtlcore"
+mandatory = false
+versionRange = "[1.2.2.5,)"
+ordering = "AFTER"
+side = "BOTH"

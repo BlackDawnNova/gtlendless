@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "github.forilusa.gtlendless.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "gtlendless.refmap.json",
+  "client": [],
+  "server": [],
+  "mixins": [
+    "GtlES_SteamMixin",
+    "BlockGetDropsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

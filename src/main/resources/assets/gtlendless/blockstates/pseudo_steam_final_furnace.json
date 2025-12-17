@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "gtlendless:block/pseudo_steam_final_furnace", "y": 0 },
+    "facing=east": { "model": "gtlendless:block/pseudo_steam_final_furnace", "y": 90 },
+    "facing=south": { "model": "gtlendless:block/pseudo_steam_final_furnace", "y": 180 },
+    "facing=west": { "model": "gtlendless:block/pseudo_steam_final_furnace", "y": 270 }
+  }
+}
