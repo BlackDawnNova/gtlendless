@@ -2,8 +2,10 @@ package github.forilusa.gtlendless.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import github.forilusa.gtlendless.config.ScannerConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -18,13 +20,13 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
-import github.forilusa.gtlendless.config.ScannerConfig;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,7 +50,7 @@ public class ScannerClientRenderer {
             0x8B00FF
     };
 
-    private enum ScannerError {
+    public enum ScannerError {
         NONE,
         NO_CONTROLLER,
         MULTIPLE_CONTROLLERS,
@@ -57,28 +59,89 @@ public class ScannerClientRenderer {
 
     private static final int MAX_ALLOWED_BLOCK_TYPES = 298 - 3;
 
+    public static class ScreenErrorDisplay {
+        private static ScannerError currentError = ScannerError.NONE;
+        private static String customMessage = "";
+
+        public static void showError(ScannerError error, String message) {
+            currentError = error;
+            customMessage = message;
+        }
+
+        public static void clearError() {
+            currentError = ScannerError.NONE;
+            customMessage = "";
+        }
+
+        public static boolean isDisplaying() {
+            return ScannerConfig.screenErrorDisplay && currentError != ScannerError.NONE;
+        }
+
+        public static ScannerError getCurrentError() {
+            return currentError;
+        }
+
+        public static String getMessage() {
+            return customMessage;
+        }
+    }
+
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+            return;
+        }
+
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        if (player == null || mc.level == null) return;
-        if (!ScannerConfig.renderMode) return;
+        if (player == null) {
+            ScreenErrorDisplay.clearError();
+            return;
+        }
+        if (mc.level == null) {
+            ScreenErrorDisplay.clearError();
+            return;
+        }
+
+        if (!ScannerConfig.renderMode) {
+            ScreenErrorDisplay.clearError();
+            return;
+        }
 
         ItemStack scannerStack = findScannerStack(player);
-        if (scannerStack == null) return;
+        if (scannerStack == null) {
+            ScreenErrorDisplay.clearError();
+            return;
+        }
 
         CompoundTag tag = scannerStack.getTag();
-        if (tag == null) return;
+        if (tag == null) {
+            ScreenErrorDisplay.clearError();
+            return;
+        }
 
         BlockPos pos1 = getPosFromNBT(tag, TAG_POS1);
         BlockPos pos2 = getPosFromNBT(tag, TAG_POS2);
 
-        if (pos1 == null && pos2 == null) return;
+        if (pos1 == null && pos2 == null) {
+            ScreenErrorDisplay.clearError();
+            return;
+        }
 
         ScannerError error = ScannerError.NONE;
         if (pos1 != null && pos2 != null) {
             error = checkForErrors(mc.level, pos1, pos2);
+
+            if (error != ScannerError.NONE) {
+                String errorMsg = getErrorMessage(error);
+                if (!ScreenErrorDisplay.isDisplaying() || ScreenErrorDisplay.getCurrentError() != error) {
+                    ScreenErrorDisplay.showError(error, errorMsg);
+                }
+            } else {
+                ScreenErrorDisplay.clearError();
+            }
+        } else {
+            ScreenErrorDisplay.clearError();
         }
 
         PoseStack poseStack = event.getPoseStack();
@@ -102,6 +165,115 @@ public class ScannerClientRenderer {
         } finally {
             bufferSource.endBatch();
             poseStack.popPose();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderGui(RenderGuiEvent.Post event) {
+        if (!ScannerConfig.screenErrorDisplay || !ScreenErrorDisplay.isDisplaying()) {
+            return;
+        }
+
+        try {
+            renderScreenErrorInGUI(Minecraft.getInstance(), event.getGuiGraphics(), event.getPartialTick());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void renderScreenErrorInGUI(Minecraft mc, GuiGraphics guiGraphics, float partialTick) {
+        ScannerError error = ScreenErrorDisplay.getCurrentError();
+        String errorMessage = ScreenErrorDisplay.getMessage();
+
+        int screenWidth = mc.getWindow().getGuiScaledWidth();
+        int screenHeight = mc.getWindow().getGuiScaledHeight();
+
+        float scale = 1.5f;
+        Font font = mc.font;
+
+        int textWidth = font.width(errorMessage);
+        float scaledTextWidth = textWidth * scale;
+        int textHeight = font.lineHeight;
+        float scaledTextHeight = textHeight * scale;
+
+        int x = screenWidth / 2 - (int) (scaledTextWidth / 2);
+        int y = screenHeight / 2 - (int) (scaledTextHeight / 2);
+
+        renderTextWithEffectInGUI(guiGraphics, font, errorMessage, x, y, scale, error);
+    }
+
+    private static void renderTextWithEffectInGUI(GuiGraphics guiGraphics, Font font, String text,
+                                                  int x, int y, float scale, ScannerError error) {
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(x, y, 0);
+        poseStack.scale(scale, scale, 1.0f);
+
+        renderTextWithEffect(guiGraphics, font, text, scale, error);
+
+        poseStack.popPose();
+    }
+
+    private static void renderTextWithEffect(GuiGraphics guiGraphics, Font font, String text,
+                                             float scale, ScannerError error) {
+        PoseStack poseStack = guiGraphics.pose();
+
+        long time = System.currentTimeMillis();
+        float pulseFactor = (float) ((Math.sin(time / 300.0) * 0.2) + 1.0);
+
+        float brightnessPulse = (float) (1.0 + 0.3 * Math.sin(time / 200.0));
+
+        if (pulseFactor > 1.1f) {
+            int glowAlpha = (int) ((pulseFactor - 1.1f) * 3.33f * 100);
+            int glowColor = (glowAlpha << 24) | 0xFFFFFF;
+
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (dx == 0 && dy == 0) continue;
+                    guiGraphics.drawString(font, text, dx, dy, glowColor, false);
+                }
+            }
+        }
+
+        int baseColor = getMainColorForError(error);
+
+        int mainColor = applyBrightnessToColor(baseColor, brightnessPulse);
+        guiGraphics.drawString(font, text, 0, 0, mainColor, false);
+
+        if (pulseFactor > 1.15f) {
+            int highlightAlpha = (int) ((pulseFactor - 1.15f) * 5 * 40);
+            int highlightColor = (highlightAlpha << 24) | 0xFFFFFF;
+            guiGraphics.drawString(font, text, 0, -1, highlightColor, false);
+        }
+    }
+
+    private static int applyBrightnessToColor(int color, float brightness) {
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int b = color & 0xFF;
+        int a = (color >> 24) & 0xFF;
+
+        r = (int) (r * brightness);
+        g = (int) (g * brightness);
+        b = (int) (b * brightness);
+
+        r = Math.min(255, Math.max(0, r));
+        g = Math.min(255, Math.max(0, g));
+        b = Math.min(255, Math.max(0, b));
+
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
+    private static int getMainColorForError(ScannerError error) {
+        switch (error) {
+            case NO_CONTROLLER:
+                return 0xFFFF5555;
+            case MULTIPLE_CONTROLLERS:
+                return 0xFFFF55FF;
+            case TOO_MANY_BLOCK_TYPES:
+                return 0xFFFFFF55;
+            default:
+                return 0xFFFF5555;
         }
     }
 
@@ -135,10 +307,9 @@ public class ScannerClientRenderer {
 
                     if (blockId.equals(scannerControllerId)) {
                         controllerCount++;
-                        continue;
+                    } else {
+                        uniqueBlocks.add(blockId);
                     }
-
-                    uniqueBlocks.add(blockId);
                 }
             }
         }

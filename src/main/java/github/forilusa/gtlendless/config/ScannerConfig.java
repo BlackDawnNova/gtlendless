@@ -14,8 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+
+//  扫描器配置
 @OnlyIn(Dist.CLIENT)
-// 扫描器核心配置类
 public class ScannerConfig {
     private static final String CONFIG_DIR = "config/gtlendless/";
     private static final String CONFIG_FILE = "scanner_settings.json";
@@ -25,12 +26,14 @@ public class ScannerConfig {
     public static boolean globalMode = true;
     public static boolean compactOutput = false;
     public static boolean renderMode = true;
+    public static boolean screenErrorDisplay = true;
 
     private static class ConfigData {
         int version = CONFIG_VERSION;
         boolean globalMode;
         boolean compactOutput;
         boolean renderMode;
+        boolean screenErrorDisplay;
     }
 
     public static void loadConfig() {
@@ -46,11 +49,13 @@ public class ScannerConfig {
                 globalMode = data.globalMode;
                 compactOutput = data.compactOutput;
                 renderMode = data.renderMode;
+                screenErrorDisplay = data.screenErrorDisplay;
             }
         } catch (JsonSyntaxException e) {
             backupCorruptedConfig(configFile);
             saveConfig();
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -65,11 +70,13 @@ public class ScannerConfig {
             data.globalMode = globalMode;
             data.compactOutput = compactOutput;
             data.renderMode = renderMode;
+            data.screenErrorDisplay = screenErrorDisplay;
 
             try (FileWriter writer = new FileWriter(CONFIG_DIR + CONFIG_FILE)) {
                 GSON.toJson(data, writer);
             }
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -78,6 +85,7 @@ public class ScannerConfig {
             Path backupPath = Paths.get(badFile.getParent(), badFile.getName() + ".corrupted_backup");
             Files.move(badFile.toPath(), backupPath);
         } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }
