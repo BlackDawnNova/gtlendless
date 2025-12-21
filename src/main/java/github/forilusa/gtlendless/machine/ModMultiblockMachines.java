@@ -29,8 +29,8 @@ public class ModMultiblockMachines {
     public static MultiblockMachineDefinition REAL_STEAM_FINAL_FURNACE;
     private static boolean hasRegistered = false;
 
-    private static final Supplier<Block> BRONZE_CASING = () -> GTBlocks.CASING_BRONZE_BRICKS.get();
-    private static final Supplier<Block> BRONZE_FIREBOX = () -> GTBlocks.FIREBOX_BRONZE.get();
+    private static final Supplier<Block> BRONZE_CASING = GTBlocks.CASING_BRONZE_BRICKS;
+    private static final Supplier<Block> BRONZE_FIREBOX = GTBlocks.FIREBOX_BRONZE::get;
     private static final Supplier<Block> STEAM_INPUT_BUS = () -> GTMachines.STEAM_IMPORT_BUS.get().self();
     private static final Supplier<Block> STEAM_OUTPUT_BUS = () -> GTMachines.STEAM_EXPORT_BUS.get().self();
 

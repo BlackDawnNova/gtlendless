@@ -1,16 +1,5 @@
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        maven { url = "https://maven.architectury.dev/" }
-        maven { url = "https://maven.minecraftforge.net/" }
-    }
-    dependencies {
-        classpath "dev.architectury:architectury-loom:1.7-SNAPSHOT"
-    }
-}
-
 plugins {
-    id "dev.architectury.loom" version "1.7-SNAPSHOT"
+    id 'net.neoforged.moddev.legacyforge' version '2.0.124'
     id "maven-publish"
     id "com.dorongold.task-tree" version "2.1.1"
 }
@@ -26,50 +15,16 @@ group = project.maven_group
 java {
     sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 }
-
-loom {
-    silentMojangMappingsLicense()
-
-    mixin {
-        defaultRefmapName = "gtlendless.refmap.json"
-        useLegacyMixinAp = false
-    }
-
-    forge {
-        mixinConfigs = ["gtlendless.mixins.json"]
-
-        dataGen {
-            mod(mod_id)
-        }
-    }
-
-    runs {
-        client {
-            property 'mixin.debug.export', 'true'
-            property 'mixin.debug.verbose', 'true'
-            property 'mixin.dumpTargetOnFailure', 'true'
-        }
-    }
+sourceSets.main {
+    ext["refMap"] = "gtlendless.mixins.refmap.json"
+}
+mixin {
+    add sourceSets.main, 'gtlendless.mixins.refmap.json'
+    config "gtlendless.mixins.json"
 }
 
 repositories {
-    maven {
-        url 'https://maven.aliyun.com/repository/public'
-        allowInsecureProtocol = true
-    }
-    maven {
-        url 'https://maven.aliyun.com/repository/central'
-        allowInsecureProtocol = true
-    }
-    maven {
-        url 'https://maven.aliyun.com/repository/gradle-plugin'
-        allowInsecureProtocol = true
-    }
-
     mavenLocal()
-    flatDir {
-        dir 'libs'
-    }
     mavenCentral()
 
     maven {
@@ -100,47 +55,6 @@ repositories {
         }
     }
     maven {
-        name = "Jared's Maven"
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
-        url "https://maven.saps.dev/releases/"
-        content {
-            includeGroup "dev.latvian.mods"
-            includeGroup "dev.ftb.mods"
-        }
-    }
-    maven {
-        url = "https://maven.tterrag.com/"
-        content {
-            includeGroup("com.jozufozu.flywheel")
-            includeGroup("com.tterrag.registrate")
-            includeGroup("com.simibubi.create")
-        }
-    }
-    maven {
-        url = "https://maven.theillusivec4.top/"
-    }
-    maven {
-        url "https://maven.architectury.dev/"
-    }
-    maven {
-        name 'IzzelAliz Maven'
-        url 'https://maven.izzel.io/releases/'
-    }
-    maven {
-        url "https://maven.teamresourceful.com/repository/maven-public/"
-    }
-    maven {
-        url = "https://repo.spongepowered.org/repository/maven-public/"
-    }
-    // maven {
-    // url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-    // }
-    maven {
-        url = "https://maven.createmod.net"
-    }
-    maven {
         name = 'GeckoLib'
         url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
         content {
@@ -148,85 +62,93 @@ repositories {
             includeGroup("com.eliotlash.mclib")
         }
     }
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        name "firstdarkdev-low-drag-lib"
+        url "https://maven.firstdark.dev/snapshots"
+    }
+    maven {
+        name 'Configuration'
+        url 'https://repo.repsy.io/mvn/toma/public/'
+    }
+    maven {
+        name 'Configuration (alternative/backup)'
+        url 'https://api.repsy.io/mvn/toma/public/'
+    }
+    maven { // Registrate
+        url "https://maven.tterrag.com/"
+    }
 }
+legacyForge {
+    version = "1.20.1-47.4.13"
+    runs {
+        client {
+            client()
+            programArguments = [
+                    "-mixin.config=gtlendless.mixins.json",
+                    "--width",
+                    "2560",
+                    "--height",
+                    "1440"
+            ]
+            gameDirectory = project.file('run')
+        }
+    }
+    mods {
+        gtlendless {
 
+            sourceSet sourceSets.main
+
+        }
+    }
+    parchment {
+        // Get versions from https://parchmentmc.org/docs/getting-started
+        // Omit the "v"-prefix in mappingsVersion
+        minecraftVersion = "1.20.1"
+        mappingsVersion = "2023.09.03"
+    }
+}
+def modrinthMods = [
+]
+def curseMods = [
+]
 dependencies {
-    minecraft "com.mojang:minecraft:$project.minecraft_version"
-    forge "net.minecraftforge:forge:$project.minecraft_version-$project.forge_version"
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
-    mappings loom.layered() {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$project.minecraft_version:$project.parchment_mappings@zip")
+    modImplementation("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
+    // https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
+// GTCEu
+    modImplementation "com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gtceu_version}"
+    modImplementation "dev.toma.configuration:configuration-${minecraft_version}:${configuration_version}-forge"
+
+    modImplementation "com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}"
+    // MC<minecraft_version>-<registrate_version>
+    modImplementation "com.tterrag.registrate:Registrate:MC1.20-1.3.11"
+    // [MC<minecraft_version>,MC<next_minecraft_version>)
+    jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "MC1.20-1.3.11")
+
+
+    modrinthMods.each { dep ->
+        modImplementation("maven.modrinth:$dep")
+    }
+    curseMods.each { dep ->
+        modImplementation "curse.maven:$dep-deobf"
+        exportModJarsConfig "curse.maven:$dep"
     }
 
-    // Mixin Extras
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$project.mixinextras_version"))
-    implementation(include("io.github.llamalad7:mixinextras-forge:$project.mixinextras_version"))
-
-    implementation files("libs/caffeine-3.1.8.jar")
-    modRuntimeOnly files("libs/caffeine-3.1.8.jar")
-
-    //GeckoLib
-    modImplementation include("software.bernie.geckolib:geckolib-forge-1.20.1:4.4")
-    implementation include("software.bernie.geckolib:geckolib-forge-1.20.1:4.4")
-    implementation include("com.eliotlash.mclib:mclib:20")
-    modImplementation "com.eliotlash.mclib:mclib:20"
-
-    // 思索
-    modImplementation("net.createmod.ponder:Ponder-Common-${minecraft_version}:${ponder_version}")
-
-    // GTCEu
-    modImplementation files("libs/gtceu-1.20.1-1.4.4.jar")
-    modImplementation files("libs/ldlib-forge-1.20.1-1.0.29.jar")
-    modImplementation files("libs/Registrate-MC1.20-1.3.11.jar")
-
-    // Configuration
-    modCompileOnly files("libs/configuration-forge-1.20.1-3.1.0.jar")
-    modRuntimeOnly files("libs/configuration-forge-1.20.1-3.1.0.jar")
-
-    // GTL核心
-    modImplementation files("libs/kotlinforforge-4.11.0-all.jar")
-
     // JEI
-    modCompileOnly files("libs/jei-1.20.1-forge-15.20.0.116.jar")
-    modRuntimeOnly files("libs/jei-1.20.1-forge-15.20.0.116.jar")
+    // at runtime, use the full JEI jar for Forge
+    compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    modImplementation("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
-    // Jade
-    modImplementation files("libs/jade-1.20.1-forge-11.9.2.jar")
-
-    // Applied Energistics 2
-    modImplementation files("libs/appliedenergistics2-forge-15.4.10.jar")
-    modImplementation files("libs/guideme-20.1.7.jar")
-
-    // Architectury
-    modImplementation files("libs/architectury-9.1.12-forge.jar")
-
-    // Team Resourceful
-    modImplementation files("libs/resourcefullib-forge-1.20.1-2.1.29.jar")
-    modImplementation files("libs/resourcefulconfig-forge-1.20.1-2.1.2.jar")
-    modImplementation files("libs/botarium-forge-1.20.1-2.3.3.jar")
-
-    // 其他模组
-    modImplementation files("libs/gtmthings-1.3.5.b.jar")
-    modImplementation files("libs/ftb-chunks-forge-2001.3.1.jar")
-    modImplementation files("libs/ftb-teams-forge-2001.3.0.jar")
-    modImplementation files("libs/ftb-library-forge-2001.2.4.jar")
-    modImplementation files("libs/glodium-1.20-1.5-forge.jar")
-    modImplementation files("libs/ExtendedAE-1.20-1.4.5-forge.jar")
-    modImplementation files("libs/merequester-forge-1.20.1-1.1.5.jar")
-    modImplementation files("libs/LibX-1.20.1-5.0.14.jar")
-    modImplementation files("libs/TravelAnchors-1.20.1-5.0.1.jar")
-    modImplementation files("libs/StargateJourney-1.20.1-0.6.42.jar")
-    modCompileOnly files("libs/ReAvaritia-1.20.1-1.3.8.3.jar")
-    modImplementation files("libs/kubejs-forge-2001.6.4-build.120.jar")
-    modImplementation files("libs/rhino-forge-2001.2.3-build.6.jar")
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
-
-    // Team Resourceful
-    forgeRuntimeLibrary("com.teamresourceful:yabn:1.0.3")
-    forgeRuntimeLibrary("com.teamresourceful:bytecodecs:1.0.2")
 }
 
 processResources {
@@ -266,11 +188,11 @@ jar {
     manifest {
         attributes([
                 "Specification-Title"     : mod_id,
-                "Specification-Vendor" : mod_authors,
+                "Specification-Vendor"    : mod_authors,
                 "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : version,
-                "Implementation-Vendor": mod_authors,
+                "Implementation-Vendor"   : mod_authors,
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
@@ -289,14 +211,18 @@ publishing {
     }
 }
 
-tasks.register('cleanLoomCache') {
-    doLast {
-        def loomCache = new File(project.projectDir, '.gradle/loom-cache')
-        if (loomCache.exists()) {
-            println "清理 Loom 缓存: ${loomCache.absolutePath}"
-            project.delete(loomCache)
-        }
-    }
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
-clean.dependsOn('cleanLoomCache')
+tasks.withType(GroovyCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+}
