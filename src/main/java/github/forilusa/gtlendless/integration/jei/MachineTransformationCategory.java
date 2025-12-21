@@ -138,10 +138,10 @@ public class MachineTransformationCategory implements IRecipeCategory<MachineTra
         int outputX = centerX + slotSpacing;
 
         builder.addSlot(mezz.jei.api.recipe.RecipeIngredientRole.INPUT, inputX, 15)
-                .addItemStack(recipe.getInput());
+                .addItemStack(recipe.input());
 
         builder.addSlot(mezz.jei.api.recipe.RecipeIngredientRole.OUTPUT, outputX, 15)
-                .addItemStack(recipe.getOutput());
+                .addItemStack(recipe.output());
     }
 
     @Override
