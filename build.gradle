@@ -1,5 +1,16 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        maven { url = "https://maven.architectury.dev/" }
+        maven { url = "https://maven.minecraftforge.net/" }
+    }
+    dependencies {
+        classpath "dev.architectury:architectury-loom:1.7-SNAPSHOT"
+    }
+}
+
 plugins {
-    id "dev.architectury.loom" version "1.6-SNAPSHOT"
+    id "dev.architectury.loom" version "1.7-SNAPSHOT"
     id "maven-publish"
     id "com.dorongold.task-tree" version "2.1.1"
 }
@@ -19,14 +30,12 @@ java {
 loom {
     silentMojangMappingsLicense()
 
-    // 确保 Mixin 配置正确
     mixin {
         defaultRefmapName = "gtlendless.refmap.json"
         useLegacyMixinAp = false
     }
 
     forge {
-        // 重新添加 mixinConfigs 以确保配置被处理
         mixinConfigs = ["gtlendless.mixins.json"]
 
         dataGen {
@@ -44,7 +53,6 @@ loom {
 }
 
 repositories {
-
     maven {
         url 'https://maven.aliyun.com/repository/public'
         allowInsecureProtocol = true
@@ -126,11 +134,19 @@ repositories {
     maven {
         url = "https://repo.spongepowered.org/repository/maven-public/"
     }
-   // maven {
-       // url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-   // }
+    // maven {
+    // url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    // }
     maven {
         url = "https://maven.createmod.net"
+    }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
     }
 }
 
@@ -140,19 +156,8 @@ dependencies {
 
     mappings loom.layered() {
         officialMojangMappings()
-         parchment("org.parchmentmc.data:parchment-$project.minecraft_version:$project.parchment_mappings@zip")
-     }
-
-    // === 添加这些 Mixin 依赖 ===
-    //annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    //implementation 'org.spongepowered:mixin:0.8.5'
-
-    // 确保 ASM 依赖
-    //implementation 'org.ow2.asm:asm:9.5'
-    //implementation 'org.ow2.asm:asm-commons:9.5'
-    //implementation 'org.ow2.asm:asm-tree:9.5'
-    //implementation 'org.ow2.asm:asm-util:9.5'
-
+        parchment("org.parchmentmc.data:parchment-$project.minecraft_version:$project.parchment_mappings@zip")
+    }
 
     // Mixin Extras
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$project.mixinextras_version"))
@@ -160,6 +165,12 @@ dependencies {
 
     implementation files("libs/caffeine-3.1.8.jar")
     modRuntimeOnly files("libs/caffeine-3.1.8.jar")
+
+    //GeckoLib
+    modImplementation include("software.bernie.geckolib:geckolib-forge-1.20.1:4.4")
+    implementation include("software.bernie.geckolib:geckolib-forge-1.20.1:4.4")
+    implementation include("com.eliotlash.mclib:mclib:20")
+    modImplementation "com.eliotlash.mclib:mclib:20"
 
     // 思索
     modImplementation("net.createmod.ponder:Ponder-Common-${minecraft_version}:${ponder_version}")
@@ -174,8 +185,6 @@ dependencies {
     modRuntimeOnly files("libs/configuration-forge-1.20.1-3.1.0.jar")
 
     // GTL核心
-    // modCompileOnly files("libs/gtlcore-1.2.2.6-fix2.jar")
-    // modImplementation files("libs/gtladditions-2.4.5Custom.jar") // GTLADD禁用
     modImplementation files("libs/kotlinforforge-4.11.0-all.jar")
 
     // JEI
@@ -196,9 +205,6 @@ dependencies {
     modImplementation files("libs/resourcefullib-forge-1.20.1-2.1.29.jar")
     modImplementation files("libs/resourcefulconfig-forge-1.20.1-2.1.2.jar")
     modImplementation files("libs/botarium-forge-1.20.1-2.3.3.jar")
-
-    // Ad Astra - 已禁用
-    // modImplementation files("libs/ad_astra-forge-1.20.1-1.15.18.jar")
 
     // 其他模组
     modImplementation files("libs/gtmthings-1.3.5.b.jar")
@@ -224,26 +230,24 @@ dependencies {
 }
 
 processResources {
-    // set up properties for filling into metadata
     var properties = [
             "mod_license"      : mod_license,
             "mod_id"           : mod_id,
-            "version"          : version, // 对应mods.toml的${version}
+            "version"          : version,
             "mod_name"         : mod_name,
             "mod_url"          : mod_url,
-            "mod_author"       : mod_authors, // 修正：匹配gradle.properties的mod_authors
-            "forge_version"    : forge_version, // 移除split，使用完整版本（47.3.7）
-            "minecraft_version": minecraft_version, // 完整MC版本（1.20.1）
-            "gtceu_version"    : gtceu_version, // 完整GTCEU版本（1.4.4）
+            "mod_author"       : mod_authors,
+            "forge_version"    : forge_version,
+            "minecraft_version": minecraft_version,
+            "gtceu_version"    : gtceu_version,
             "kubejs_version"   : kubejs_version,
             "jei_version"      : jei_version,
     ]
     inputs.properties(properties)
 
     filesMatching("META-INF/mods.toml") {
-        expand properties // 替换所有占位符
+        expand properties
     }
-
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -255,22 +259,23 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-    withSourcesJar() //源代码
+    withSourcesJar()
 }
 
 jar {
     manifest {
         attributes([
                 "Specification-Title"     : mod_id,
-                "Specification-Vendor"    : mod_author,
+                "Specification-Vendor" : mod_authors,
                 "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : version,
-                "Implementation-Vendor"   : mod_author,
+                "Implementation-Vendor": mod_authors,
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
+
 
 publishing {
     publications {
