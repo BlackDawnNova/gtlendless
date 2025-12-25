@@ -31,6 +31,7 @@ public class ModCreativeModeTab {
                         pOutput.accept(ModItems.FINAL_PROTON.get());
                         pOutput.accept(ModItems.GENESIS_FACTOR.get());
                         pOutput.accept(ModItems.MULTIBLOCK_SCANNER.get());
+                        pOutput.accept(ModItems.UNIVERSAL_ENTITY_CONTROLLER.get());
                     })
                     .build()
     );

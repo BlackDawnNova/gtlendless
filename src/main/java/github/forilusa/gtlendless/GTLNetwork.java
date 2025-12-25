@@ -1,6 +1,7 @@
 package github.forilusa.gtlendless;
 
 import github.forilusa.gtlendless.network.ClearScannerSelectionsPacket;
+import github.forilusa.gtlendless.network.ItemSyncPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -24,6 +25,14 @@ public class GTLNetwork {
                 ClearScannerSelectionsPacket::encode,
                 ClearScannerSelectionsPacket::new,
                 ClearScannerSelectionsPacket::handle
+        );
+
+        CHANNEL.registerMessage(
+                packetId++,
+                ItemSyncPacket.class,
+                ItemSyncPacket::encode,
+                ItemSyncPacket::decode,
+                ItemSyncPacket::handle
         );
     }
 }

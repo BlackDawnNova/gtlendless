@@ -91,4 +91,19 @@ public class AnimationConfig {
             },
             null
     );
+
+    public static final AnimationConfig UNIVERSAL_ENTITY_CONTROLLER = new AnimationConfig(
+            titleKey -> github.forilusa.gtlendless.util.AnimatedTextUtil.createTranslatedGoldenWave(titleKey),
+            author -> github.forilusa.gtlendless.client.AnimatedTextManager.createDynamicTranslatedRainbowWave(author),
+            "tooltip.gtlendless.universal_entity_controller.title",
+            "tooltip.gtlendless.universal_entity_controller.description",
+            new String[]{
+                    "tooltip.gtlendless.universal_entity_controller.usage_title",
+                    "tooltip.gtlendless.universal_entity_controller.usage1",
+                    "tooltip.gtlendless.universal_entity_controller.usage2",
+                    "tooltip.gtlendless.universal_entity_controller.usage3",
+                    "tooltip.gtlendless.universal_entity_controller.usage4"
+            },
+            null
+    );
 }

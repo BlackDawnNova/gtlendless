@@ -2,7 +2,7 @@ package github.forilusa.gtlendless.item.custom;
 
 import github.forilusa.gtlendless.GTLendless;
 import github.forilusa.gtlendless.block.custom.ModBlocks;
-import github.forilusa.gtlendless.registration.GTLEndlessRegistrate;
+import github.forilusa.gtlendless.item.animation.AnimationConfig;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
@@ -19,7 +19,7 @@ public class ModItems {
                     new Item.Properties()
                             .stacksTo(1)
                             .fireResistant(),
-                    github.forilusa.gtlendless.item.animation.AnimationConfig.WATER_BUCKET,
+                    AnimationConfig.WATER_BUCKET,
                     true
             ));
 
@@ -27,7 +27,7 @@ public class ModItems {
             () -> new AnimatedProtonItem(
                     new Item.Properties()
                             .fireResistant(),
-                    github.forilusa.gtlendless.item.animation.AnimationConfig.PROTON,
+                    AnimationConfig.PROTON,
                     false
             ));
 
@@ -35,8 +35,17 @@ public class ModItems {
             () -> new AnimatedGenesisFactorItem(
                     new Item.Properties()
                             .fireResistant(),
-                    github.forilusa.gtlendless.item.animation.AnimationConfig.GENESIS,
+                    AnimationConfig.GENESIS,
                     false
+            ));
+
+
+    public static final RegistryObject<Item> UNIVERSAL_ENTITY_CONTROLLER = ITEMS.register("universal_entity_controller",
+            () -> new UniversalEntityController(  // 使用现有的UniversalEntityController类
+                    new Item.Properties()
+                            .stacksTo(1)
+                            .fireResistant()
+                            .rarity(net.minecraft.world.item.Rarity.EPIC)
             ));
 
     // 工具
@@ -52,13 +61,11 @@ public class ModItems {
             () -> new AnimatedLogBlockItem(
                     ModBlocks.FIRST_LOG.get(),
                     new Item.Properties(),
-                    github.forilusa.gtlendless.item.animation.AnimationConfig.LOG,
+                    AnimationConfig.LOG,
                     true
             ));
 
 
-    // 机器
-    // 终焉蒸汽熔炉(伪)
     public static final RegistryObject<Item> PSEUDO_STEAM_FINAL_FURNACE = ITEMS.register("pseudo_steam_final_furnace",
             () -> new BlockItem(ModBlocks.PSEUDO_STEAM_FINAL_FURNACE.get(),
                     new Item.Properties()));

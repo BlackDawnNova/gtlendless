@@ -117,7 +117,8 @@ def modrinthMods = [
 def curseMods = [
         "appliedenergistics2-forge-223794:7148487",
         "guideme-forge-1173950:7127447",
-        "jade-1.20.1-324717:6855440"
+        "jade-1.20.1-324717:6855440",
+        "ModernUI-Forge-352491:6956345"
 ]
 dependencies {
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"

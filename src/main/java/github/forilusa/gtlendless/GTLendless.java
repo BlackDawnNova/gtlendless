@@ -5,7 +5,11 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.mojang.logging.LogUtils;
 
 import github.forilusa.gtlendless.block.custom.ModBlocks;
+import github.forilusa.gtlendless.command.ES001Commands;
 import github.forilusa.gtlendless.config.GTLendlessConfig;
+import github.forilusa.gtlendless.entity.ES001DataManager;
+import github.forilusa.gtlendless.entity.ModEntities;
+import github.forilusa.gtlendless.entity.gui.ES001Container;
 import github.forilusa.gtlendless.item.custom.ModCreativeModeTab;
 import github.forilusa.gtlendless.item.custom.ModItems;
 import github.forilusa.gtlendless.machine.ModMultiblockMachines;
@@ -14,7 +18,15 @@ import github.forilusa.gtlendless.machine.registry.ScannerControllerRegistration
 import github.forilusa.gtlendless.registration.GTLEndlessRegistrate;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -36,6 +48,12 @@ public class GTLendless {
 
     public static SimpleChannel NETWORK_CHANNEL;
 
+    public static final DeferredRegister<MenuType<?>> MENUS =
+            DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
+
+    public static final RegistryObject<MenuType<ES001Container>> ES_001_CONTAINER =
+            MENUS.register("es_001_container", () -> IForgeMenuType.create(ES001Container::new));
+
     public GTLendless() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -45,6 +63,8 @@ public class GTLendless {
         GTLendlessConfig.fixCorruptedConfig();
         modEventBus.addListener(GTLendlessConfig::onConfigLoad);
         modEventBus.addListener(GTLendlessConfig::onConfigReload);
+        ModEntities.ENTITY_TYPES.register(modEventBus);
+        MENUS.register(modEventBus);
 
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
@@ -54,6 +74,11 @@ public class GTLendless {
         modEventBus.addListener(this::commonSetup);
 
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void onServerStarting(ServerStartedEvent event) {
+        ES001DataManager.get(event.getServer().overworld());
     }
 
     private void onRegisterMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event) {
@@ -71,6 +96,11 @@ public class GTLendless {
                 Files.createDirectories(Paths.get("config/gtlendless/structures"));
             } catch (IOException e) {}
         });
+    }
+
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        ES001Commands.register(event.getDispatcher());
     }
 
     public static ResourceLocation id(String path) {
